@@ -2,11 +2,11 @@
 wstring Player::sendMessage(std::wstring const&):
 
 0x6A2990:
-SUB SP, SP, #0x40
-STR X21, [SP,#0x10]
-STP X19, X20, [SP,#0x20]
-STP X29, X30, [SP,#0x30]
-ADD X29, SP, #0x30 
+SUB SP, SP, #0x50
+STR X21, [SP,#0x20]
+STP X19, X20, [SP,#0x30]
+STP X29, X30, [SP,#0x40]
+ADD X29, SP, #0x40 
 MOV X19, X0
 MOV X20, X1
 MOV W0, #0x90 ; unsigned __int64
@@ -17,18 +17,18 @@ MOV W3, #0x46
 MOV X1, X20 ; string
 MOV X0, X21
 BL 0xAE810 ; ChatPacket
-ADD X0, SP, #0x18
+ADD X0, SP, #0x8
 MOV X1, X21
 MOV X2, XZR
 BL 0x7520C
-ADD X1, SP, #0x18
+ADD X1, SP, #0x8
 LDR X0,[X19,#0x8B8] ; player->packetlistener
 BL 0x7057C4 ; sendpacket
-ADD X0, SP, #0x18
+ADD X0, SP, #0x8
 BL 0xF400 ; deletepacket
 MOV X0, X20
-LDP X29, X30, [SP,#0x30]
-LDP X19, X20, [SP,#0x20]
-LDR X21, [SP,#0x10]
-ADD SP, SP, #0x40
+LDP X29, X30, [SP,#0x40]
+LDP X19, X20, [SP,#0x30]
+LDR X21, [SP,#0x20]
+ADD SP, SP, #0x50
 RET

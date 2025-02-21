@@ -95,4 +95,16 @@ renderXZSpeed
 0x52A410:
 Idchanger
 
+0x52A5D0:
+Filereader
+
 ## Original : Tutorial::staticCtor(void) : 0x524554 -- 0x529468
+
+
+0x52A6A0 ; ,jbn
+
+0x52A880 ; double hypot(double x, double y)
+
+0x52A8A8 ; float hypot(float x, float y)
+
+0x52A8F0 ; float getScreenScaleCord(void)

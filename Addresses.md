@@ -64,6 +64,8 @@ void display2DBox(int x, int y, int sX, int sY, int textcolor, int opacity):
 0x521788:
 wstring displayString(std::wstring const&, int x, int y, int textcolor, int textalign, float scale):
 
+
+
 ## Original : Tutorial::AddHints(void) : 0x52946C -- 0x52FE34
 0x529470:
 RenderPos
@@ -98,9 +100,6 @@ Idchanger
 0x52A5D0:
 Filereader
 
-## Original : Tutorial::staticCtor(void) : 0x524554 -- 0x529468
-
-
 0x52A6A0 ; ,jbn
 
 0x52A880 ; double hypot(double x, double y)
@@ -108,3 +107,23 @@ Filereader
 0x52A8A8 ; float hypot(float x, float y)
 
 0x52A8F0 ; float getScreenScaleCord(void)
+
+0x52A9D0 ; whoKicked
+
+0x52AC30, AD00 ; Freelook
+
+0x52AE00 ; Waila
+
+0x52AF50 ; getPlayers
+
+0x52B030 ; hitPlayer
+
+0x52B150 ; sprintGlitchDetector
+
+0x52B270 ; getWchar
+
+0x52B300 ; bookchat
+
+
+## Original : Tutorial::staticCtor(void) : 0x524554 -- 0x529468
+0x52455C ; NBT

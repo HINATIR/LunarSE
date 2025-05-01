@@ -1,0 +1,2306 @@
+﻿<GameMode xmlns="Schema.xsd" version="7.0" name="MG01" id="1">
+
+	<!-- Game rules and structure -->
+	
+	<!-- 4J-JEV: 
+		These govern the options presented to the host. The default value must be one of those present in the list. 
+		This is a little fiddly to enable configurable host option's that are exposed to players and I think you 
+		might find it easier to edit the refererer directly (where there is one) for test purposes. -->
+	<HostOptions version="2"> <!-- 4J-JEV: Incrementing version number resets all options to default values. -->
+		
+		<!-- ORDER OF MATCHMAKING FILTERS IS IMPORTANT -->
+		<!-- Game length (default values count from 1) -->
+		<MatchmakingFilter default="2">
+			<!-- SHORT -->
+			<Variant>
+				<RoundLength value="180"/>
+			</Variant>
+			
+			<!-- NORMAL -->
+			<Variant>
+				<RoundLength value="300"/>
+			</Variant>
+			
+			<!-- LONG -->
+			<Variant>
+				<RoundLength value="600"/>
+			</Variant>
+		</MatchmakingFilter>
+
+		<!-- Other variants (default values count from 1) -->
+		<MatchmakingFilter default="1">
+			<Variant>
+				<NoSmallSkins value="0"/>
+				<SpectateMode value="1"/>			
+			</Variant>
+			
+			<Variant>
+				<NoSmallSkins value="1"/>
+				<SpectateMode value="0"/>				
+			</Variant>  
+
+			<Variant>
+				<Nothing value="0"/>
+			</Variant>
+		</MatchmakingFilter>
+		
+		<!-- Max Players (default values count from 1) -->
+		<MatchmakingFilter default="2">
+			<Variant>
+				<MaxPlayers value="8"/>
+			</Variant>
+			<Variant>
+				<MaxPlayers value="16"/>
+			</Variant>
+		</MatchmakingFilter>
+		
+		<!-- See: EndConditions\Disjunction\RoundTimeCondition -->
+		<RoundLength default="300">180 300 600</RoundLength>
+
+		<NoSmallSkins default="1"/>
+
+		<!-- See: SpectateMode -->
+		<SpectateMode default="1">0 1 2 3 4</SpectateMode>
+
+		<PointsActive default="0"/>
+
+		<CentreSpawn default="1"/>
+
+		<MaxPlayers default="16">8 16</MaxPlayers>
+
+    <!--<AvailableLootSets default="Normal"/>-->
+
+    <!-- If you add any more, then add defaults to the filters above -->
+		
+	</HostOptions>
+	
+	<StartConditions>
+		<Conjunction>
+			
+			<PlayersCondition op="GreaterThanOrEquals" value="2" activeOnly="false" readyOnly="true"/>
+			
+		</Conjunction>
+	</StartConditions>
+
+	<EndConditions>
+		<Disjunction>
+			
+			<RoundTimeCondition value="$RoundLength" /> <!-- in seconds -->
+
+			<PlayersCondition op="LessThanOrEquals" value="1" activeOnly="true" readyOnly="false"/>
+		
+		</Disjunction>
+	</EndConditions>
+
+	<ShowdownConditions>
+		<Disjunction>
+			
+			<!-- If its been 1 minute since we reached 1 vs 1 -->
+			<TimeSincePlayersCondition value="60" playerCount="3" />
+			
+			<!-- If the round is almost over -->
+			<RoundTimeCondition value="$RoundLength" offset="-70" /> 
+			
+		</Disjunction>
+	</ShowdownConditions>
+
+	<DifficultyOverride>Hard</DifficultyOverride>
+	<PlayerGameType>Adventure</PlayerGameType>
+	
+	<LivesPerRound>1</LivesPerRound>
+	<RoundCount>1</RoundCount>
+	
+	<TeamCount>16</TeamCount>
+	<TeamBasedSpawn>false</TeamBasedSpawn>
+	<TeamMaxSize>2</TeamMaxSize>
+
+	<MaxPlayersForSmallMaps>6</MaxPlayersForSmallMaps>
+
+	<SpectateMode>$SpectateMode</SpectateMode>
+
+	<ShowInvulnerableEffect>true</ShowInvulnerableEffect>
+	<IndicatorDelay>1.0</IndicatorDelay>
+	
+	<!-- Restrict placing and destroying blocks entirely. -->
+	<DestroyPermissions mode="WhiteList"/>
+
+	<PlacePermissions mode="WhiteList">
+		<!-- Allow placing TNT -->
+		<Exception id="46"/>
+	</PlacePermissions>
+	
+	<!-- Use permission restrictions to stop players using hoes and Skulls -->
+	<UsePermissions mode="BlackList">
+		<Exception id="290" />
+		<Exception id="291" />
+		<Exception id="292" />
+		<Exception id="293" />
+		<Exception id="294" />
+		<Exception id="397" />
+		<!-- Shovels -->
+		<Exception id="256" />
+		<Exception id="269" />
+		<Exception id="273" />
+		<Exception id="277" />
+		<Exception id="284" />
+	</UsePermissions>
+
+	<!-- Added a BlockUseMode to seperate the restriction on using blocks in the mini game -->
+	<BlockUsePermissions mode="WhiteList">
+		<!-- Oak Door -->
+		<Exception id="64"/>
+		<!-- Iron Door -->
+		<Exception id="71" />
+		<!-- Spruce Door -->
+		<Exception id="193" />
+		<!-- Birch Door -->
+		<Exception id="194" />
+		<!-- Jungle Door -->
+		<Exception id="195" />
+		<!-- Acacia Door -->
+		<Exception id="196" />
+		<!-- Dark Oak Door -->
+		<Exception id="197" />
+		
+		<!-- Iron TrapDoor -->
+		<Exception id="167" />
+		<!-- Wooden TrapDoor -->
+		<Exception id="96" />
+		
+		<!-- Stone Button -->
+		<Exception id="77" />
+		<!-- Woodean Button -->
+		<Exception id="143" />
+
+		<!-- Lever -->
+		<Exception id="69" />
+
+		<!-- Chest -->
+		<Exception id="54" />
+		<!-- Ender chest -->
+		<Exception id="130" />
+		<!-- Trapped Chest -->
+		<Exception id="146" />
+	</BlockUsePermissions>
+	
+	<BlockTicking override="true">
+		<Exception id="39">false</Exception> <!-- Brown Mushroom -->
+		<Exception id="40">false</Exception> <!-- Red Mushroom -->
+		<Exception id="79">false</Exception> <!-- Ice -->
+	</BlockTicking>
+
+	<Timers>
+		<!-- Measured in seconds. -->
+
+		<!-- Time spent preparing before we start checking if the start conditions are satisfied. -->
+		<RoundPreparing duration="5"/>
+		
+		<!-- Start conditions satisfied, warning countdown before players are set loose. -->
+		<RoundStartDelay duration="10" announceEvery="1"/>
+
+		<!-- Timer that ends the grace period and makes the players mortal. -->
+		<GracePeriod duration="15" announceEvery="1"/>
+		
+		<!-- Triggered by the EndConditions being satified, and when finished starts respawns the players in the lobby. -->
+		<RoundEndDelay duration="10" announceEvery="1"/>
+		
+		<!-- Triggered on round start: timer force ends the game. -->
+		<RoundLimit changeAnnounceWhenRemaining="60" changedAnnounce="1"/>
+
+		<!-- Old Showdown timer -->
+		<Showdown announceEvery="1"/>
+
+	</Timers>
+
+	<!-- Sound specs -->
+	<!-- For each named sound you can specify volume (float, default 1.0) and forLast (how many timer ticks the sound plays for, defaults to int max, only works for timers) -->
+	<Sounds>
+		<OnShowdown volume="1.0"/>
+		<OnRoundStart/>
+		<OnRoundPlay/>
+		<OnRoundEnding/>
+		<OnChestRefill/>
+		<OnDeath/>
+		<RoundStartTimer forLast="5"/>
+		<GraceTimer forLast="3"/>
+		<RoundLimitTimer forLast="30"/>
+	</Sounds>
+
+	<!-- Game Balance Settings -->
+
+	<SprintSpeed>1.3</SprintSpeed>
+
+  <!--
+    4J-JEV: Valid tags.
+
+    MaxFood: Maximum food points a player can have.
+    MaxSaturation: Maximum food saturation a player can have.
+    StartSaturation: Food saturation a player starts with.
+    SaturationFloor: Min saturation level.
+    ExhaustionDrop: The amount of exhaustion that causes a drop in 1 saturation/food level.
+    HealthTickCount: How long it takes the player to regenerate health when healing.
+    HealLevel: Minimum food level where the player will still heal.
+    StarveLevel: Maximum food level where the player will starve.
+    SprintLevel: 4J-ADDED: Minimum food required to sprint 
+    ExhaustionHeal: Exhaustion caused by healing (faster when health regenerates faster).
+    ExhaustionJump: Exhaustion caused by jumping
+    ExhaustionSprintJump: Exhaustion caused by long jumping
+    ExhaustionMine: Exhaustion caused by breaking blocks
+    ExhaustionAttack: Exhaustion caused by attacking
+    ExhaustionDamage: Exhaustion caused by receiving damage
+
+    4J-JEV: These are all per meter.
+    ExhaustionWalk: Exhaustion caused by walking
+    ExhaustionSprint: Exhaustion caused by sprinting
+    ExhaustionSwim: Exhaustion caused by swimming
+
+    4J-Added: This is per tick (keep much lower than the others)
+    ExhaustionIdle: Exhaustion caused by existing
+    
+    4J IME - defaults listed below are for Survival as of 13/09/2017
+  -->
+  
+	<FoodBalance id="0">
+
+		<Variants>
+      
+      <Variant id="0"> <!-- Standard -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    4.0       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   40        </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 40 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         4         </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       0         </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       0         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        4.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        0.2       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  0.8       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.025     </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.3       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.1       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.04      </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.04      </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.085     </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.03      </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.004     </ExhaustionIdle>       <!-- Default 0.0 -->
+      </Variant>
+      
+			<Variant id="1"> <!-- Fast Hunger; less punishment for action, triple idle hunger. -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    5.0       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   60        </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 40 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         4         </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       0         </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       0         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        5.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        0.2       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  0.8       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.025     </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.3       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.1       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.0       </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.0       </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.05      </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.0       </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.012     </ExhaustionIdle>       <!-- Default 0.0 -->
+			</Variant>
+      
+			<Variant id="2"> <!-- Fast Healing -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    4.0       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   20        </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 10 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         8         </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       0         </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       0         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        5.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        0.2       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  0.8       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.025     </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.3       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.1       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.0       </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.0       </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.05      </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.0       </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.004     </ExhaustionIdle>       <!-- Default 0.0 -->
+			</Variant>
+      
+      <Variant id="3"> <!-- No Starving -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    4.0       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   40        </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 40 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         4         </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       -1         </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       0         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        4.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        0.2       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  0.8       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.025     </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.3       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.1       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.04      </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.04      </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.085     </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.03      </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.004     </ExhaustionIdle>       <!-- Default 0.0 -->
+      </Variant>
+      
+      <Variant id="4"> <!-- Always Healing -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    4.0       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   100       </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 40 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         0         </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       -1        </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       6         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        4.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        0.2       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  0.8       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.025     </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.3       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.1       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.04      </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.04      </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.085     </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.03      </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.004     </ExhaustionIdle>       <!-- Default 0.0 -->
+      </Variant>
+      
+      <Variant id="5"> <!-- No Hunger -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    4.0       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   40        </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 40 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         21        </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       0         </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       0         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        0.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        0.0       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  0.0       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.0       </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.0       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.0       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.0       </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.0       </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.0       </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.0       </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.0       </ExhaustionIdle>       <!-- Default 0.0 -->
+      </Variant>
+      
+      <Variant id="6"> <!-- Lead Boots (jumping and swimming are bad, sprinting is hard) -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    4.0       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   40        </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 40 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         4         </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       0         </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       0         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        4.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        1.0       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  2.5       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.025     </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.3       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.1       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.04      </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.04      </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.2       </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.5       </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.004     </ExhaustionIdle>       <!-- Default 0.0 -->
+      </Variant>
+      
+      <Variant id="7"> <!-- Always Hungry -->
+        <!-- Food -->
+        <MaxFood>           20        </MaxFood>                  <!-- Default 20 -->
+        <MaxSaturation>     4.0       </MaxSaturation>            <!-- Default 20.0 -->
+        <StartSaturation>   4.0       </StartSaturation>          <!-- Default MaxSaturation / 4.0 -->
+        <SaturationFloor>   0.0       </SaturationFloor>          <!-- Default MaxSaturation / 8.0 -->
+        <ExhaustionDrop>    1.5       </ExhaustionDrop>           <!-- Default 4.0 -->
+        <HealthTickCount>   40        </HealthTickCount>          <!-- Default 80 -->
+        <HealthTickCountSaturated> 40 </HealthTickCountSaturated> <!-- Default 10 -->
+        <HealLevel>         4         </HealLevel>                <!-- Default 18 -->
+        <StarveLevel>       0         </StarveLevel>              <!-- Default 0 -->
+        <SprintLevel>       0         </SprintLevel>              <!-- Default 6 -->
+
+        <!-- Action Exhaustion -->
+        <ExhaustionHeal>        4.0       </ExhaustionHeal>       <!-- Default 6.0 -->
+        <ExhaustionJump>        0.2       </ExhaustionJump>       <!-- Default 0.05 -->
+        <ExhaustionSprintJump>  0.8       </ExhaustionSprintJump> <!-- Default ExhaustionJump * 4.0 -->
+        <ExhaustionMine>        0.025     </ExhaustionMine>       <!-- Default 0.005 -->
+        <ExhaustionAttack>      0.3       </ExhaustionAttack>     <!-- Default 0.1 -->
+        <ExhaustionDamage>      0.1       </ExhaustionDamage>     <!-- Default 0.1 -->
+        <ExhaustionSneak>       0.04      </ExhaustionSneak>      <!-- Default 0.0 -->
+        <ExhaustionWalk>        0.04      </ExhaustionWalk>       <!-- Default 0.0 -->
+        <ExhaustionSprint>      0.085     </ExhaustionSprint>     <!-- Default 0.1 -->
+        <ExhaustionSwim>        0.03      </ExhaustionSwim>       <!-- Default 0.01 -->
+        <ExhaustionIdle>        0.004     </ExhaustionIdle>       <!-- Default 0.0 -->
+      </Variant>
+
+		</Variants>
+	
+	</FoodBalance>
+	
+	<ChestRefill>
+		<CentralRefillChance>1</CentralRefillChance>
+		<OuterRefillChance>1</OuterRefillChance>
+		<HVRefillChance>1</HVRefillChance>
+		<NumberOfChestsToRefill>10</NumberOfChestsToRefill>
+		<MinPlayerDistanceToEffectChance>16</MinPlayerDistanceToEffectChance>
+		<MaxPlayerDistanceToEffectChance>32</MaxPlayerDistanceToEffectChance>
+		<CentralLootGroup>UpdateItems</CentralLootGroup>
+		<OuterLootGroup>OuterItems</OuterLootGroup>
+		<HVLootGroup>HVItems</HVLootGroup>
+	</ChestRefill>
+
+	<ItemBalance>
+
+		<!-- POTION IDS can be found in ItemPotionFix::staticCtor -->
+
+		<!-- 4J-JEV: Measured in ticks. -->
+		<Item id="373"><PotionDuration effectId= "7">400</PotionDuration></Item> <!-- Potion of Fire Resistance - 20 seconds -->
+		<Item id="438"><PotionDuration effectId="29">200</PotionDuration></Item> <!-- Splash Potion of Weakness - 10 seconds -->
+		<Item id="373"><PotionDuration effectId="26">200</PotionDuration></Item> <!-- Potion of Strength - 10 seconds -->
+		<Item id="438"><PotionDuration effectId="12">200</PotionDuration></Item> <!-- Splash Potion of Slowness - 10 seconds -->
+		<Item id="373"><PotionDuration effectId="23">300</PotionDuration></Item> <!-- Potion of Regeneration - 15 seconds -->
+		<Item id="373"><PotionDuration effectId= "9">400</PotionDuration></Item> <!-- Potion of Swiftness - 20 seconds -->
+		<Item id="373"><PotionDuration effectId= "4">400</PotionDuration></Item> <!-- Potion of Leaping II - 20 seconds -->
+		<Item id="373"><PotionDuration effectId= "2">400</PotionDuration></Item> <!-- Potion of Invisibility - 20 Seconds -->
+		<Item id="438"><PotionDuration effectId="20">200</PotionDuration></Item> <!-- Splash Potion of Poison - 10 seconds -->
+		<Item id="438"><PotionDuration effectId="22">200</PotionDuration></Item> <!-- Splash Potion of Poison II - 10 seconds -->
+
+		<Item id="438"> <!-- Adjust potion range -->
+			<BaseDamage>1.5</BaseDamage>
+		</Item>
+		
+	</ItemBalance>	
+
+	<!-- Item Loot Distribution -->
+
+	<LootSets>
+
+		<LootSet name="Normal">
+
+			<LootGroup name="StartItems" kpScore="20" distributionMethod="KitKPRandom">
+								
+				<!-- BASE KITS -->
+
+				<!-- Attributes -->
+				<!-- weight: used for random selection -->
+				<!-- kpScore: estimate of the value of the contents -->
+
+				<!-- Kits       Weights -->
+				<!-- Swordsman: 150 - 15% -->
+				<!-- Heavy:     150 - 15% -->
+				<!-- Scout:     150 - 15% -->
+				<!-- Mage:      100 - 10% -->
+				<!-- Healer:    100 - 10% -->
+				<!-- Ninja:     100 - 10% -->
+				<!-- Pirate:     75 - 7.5% -->
+				<!-- Gardener:   75 - 7.5% -->
+				<!-- Pyro Farmer:75 - 7.5% -->
+				
+				<!-- Swordsman --> 
+				<!-- 15% -->
+				<Kit weight="150" kpScore="10">
+					<Item id="310">  <!-- diamond armor -->
+						<Enchantment id ="4" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="311">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="312">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="313">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="276">  <!-- diamond sword -->
+						<Enchantment id ="16" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="346">  <!-- fishing rod -->
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="322" qty="16"/>
+				</Kit>
+
+
+			</LootGroup>
+			
+			
+			<!--  ****************************************************************  -->
+			<!-- THESE ITEMS WILL BEGIN FILLING THE STARTING CHESTS AFTER X MINUTES -->
+			<!--  ****************************************************************  -->
+
+			<LootGroup name="UpdateItems" kpScore="3" distributionMethod="KitKPRandom">
+				<Kit weight="150" kpScore="10">
+					<Item id="310">  <!-- diamond armor -->
+						<Enchantment id ="4" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="311">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="312">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="313">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="276">  <!-- diamond sword -->
+						<Enchantment id ="16" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="346">  <!-- fishing rod -->
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="322" qty="16"/>
+				</Kit>
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--                 ITEM LISTS FOR THE OUTER CHESTS                    -->
+			<!--  ****************************************************************  -->
+			
+			<LootGroup name="OuterItems" kpScore="20" distributionMethod="KitKPRandom">
+				<Kit weight="150" kpScore="10">
+					<Item id="310">  <!-- diamond armor -->
+						<Enchantment id ="4" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="311">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="312">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="313">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="276">  <!-- diamond sword -->
+						<Enchantment id ="16" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="346">  <!-- fishing rod -->
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="322" qty="16"/>
+				</Kit>
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--        THESE ITEMS WILL BE PLACED INTO HIGH VALUE CHESTS           -->
+			<!--  ****************************************************************  -->			
+
+			<LootGroup name="HVItems" kpScore="18" distributionMethod="KitKPRandom">
+				<Kit weight="150" kpScore="10">
+					<Item id="310">  <!-- diamond armor -->
+						<Enchantment id ="4" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="311">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="312">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="313">  <!-- diamond armor -->
+						<Enchantment id ="0" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="276">  <!-- diamond sword -->
+						<Enchantment id ="16" level="4" override="true"/>
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="346">  <!-- fishing rod -->
+						<Enchantment id ="34" level="10" override="true"/>
+						<Enchantment id ="71" level="10" override="true"/>
+					</Item>
+					<Item id="322" qty="16"/>
+				</Kit>
+		 </LootGroup>
+		</LootSet>
+
+		<LootSet name="NoArmour">
+			<LootGroup name="StartItems" kpScore="20" distributionMethod="KitKPRandom">
+								
+				<!-- BASE KITS -->
+
+				<!-- Attributes -->
+				<!-- weight: used for random selection -->
+				<!-- kpScore: estimate of the value of the contents -->
+
+				<!-- Kits       Weights -->
+				<!-- Swordsman: 150 - 15% -->
+				<!-- Heavy:     150 - 15% -->
+				<!-- Scout:     150 - 15% -->
+				<!-- Mage:      100 - 10% -->
+				<!-- Healer:    100 - 10% -->
+				<!-- Ninja:     100 - 10% -->
+				<!-- Pirate:     75 - 7.5% -->
+				<!-- Gardener:   75 - 7.5% -->
+				<!-- Pyro Farmer:75 - 7.5% -->
+				
+				<!-- Swordsman --> 
+				<!-- 15% -->
+				<Kit weight="150" kpScore="10">
+					<Item id="268"/>               <!-- Wooden sword -->
+					<Item id ="373" aux="37"/>   <!-- Potion of Healing -->
+					<Item id="438" aux="8"/>   <!-- Splash Potion of Weakness -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="268"/>               <!-- Wooden sword -->
+					<Item id ="373" aux="1"/>   <!-- Potion of Regeneration -->
+					<Item id="438" aux="10"/>   <!-- Splash Potion of Slowness -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="271"/>               <!-- Wooden Axe -->
+					<Item id ="261"/>              <!-- Bow -->
+					<Item id="262" qty="5"/>       <!-- Arrow -->
+				</Kit>
+
+
+				<!-- Heavy -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="12">
+					<Item id="257"/>					    <!-- Iron Pickaxe -->
+					<Item id="373" aux="9"/>      <!-- Potion of Strength -->
+				</Kit>
+				<Kit weight="150" kpScore="12">
+					<Item id="46" qty="3"/>       <!-- TNT -->
+					<Item id ="373" aux="3"/>     <!-- Potion of Fire Resistance -->
+				</Kit>
+				<Kit weight="150" kpScore="5">
+					<Item id="280">               <!-- Stick - Sharpness 1 -->
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Scout -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="10">
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="262" qty="5"/>          <!-- Arrow -->
+					<Item id ="373" aux="2"/>         <!-- Potion of Swiftness -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="440" aux="8" qty="3"/>  <!-- Arrows of Weakness -->
+					<Item id="440" aux="10" qty="3"/> <!-- Arrows of Slowness -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="276" qty="1" aux="1560"/> <!-- Diamond Sword - 2 Uses (1561 total uses for Diamond tier) -->
+					<Item id ="373" aux="2"/>           <!-- Potion of Swiftness -->
+				</Kit>
+
+
+				<!-- Mage -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="280">                               <!-- Stick - Fire - Sharpness 1 -->
+						<Enchantment id="20" level="1" override="true"/>
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+					<Item id="438" aux="12" qty="4"/>          <!-- Splash Potions of Harming -->
+					<Item id="438" aux="10"/>                  <!-- Splash Potion of Slowness -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="280">                               <!-- Stick - Knockback I - Sharpness 1 -->
+						<Enchantment id="19" level="1" override="true"/>
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+					<Item id="438" qty="4" aux="12"/>          <!-- Splash Potion of Harming -->
+					<Item id="438" aux="8"/>                  <!-- Splash Potion of Weakness -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="280">                               <!-- Stick - Sharpness 2 -->
+						<Enchantment id="16" level="2" override="true"/>
+					</Item>
+					<Item id="438" qty="4" aux="12"/>          <!-- Splash Potion of Harming -->
+				</Kit>
+
+
+				<!-- Healer -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id ="373" aux="1"/>           <!-- Potion of Regeneration -->
+					<Item id ="373" aux="2"/>           <!-- Potion of Swiftness -->
+					<Item id ="373" aux="37"/>          <!-- Potion of Healing -->
+					<Item id ="373" aux="3"/>           <!-- Potion of Fire Resistance -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id ="373" aux="1"/>           <!-- Potion of Regeneration -->
+					<Item id="449"/>                    <!-- Totem of Undying -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="438" aux="36" qty="5"/>   <!-- Splash Potions of Poison -->
+					<Item id="438" aux="8"/>            <!-- Splash Potion of Weakness -->
+					<Item id="441" aux="37"/>           <!-- Lingering Potion of Healing -->
+				</Kit>
+
+
+				<!-- Ninja -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="332" qty="16"/>         <!-- Snowball -->
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id ="373" aux="2"/>         <!-- Potion of Swiftness -->
+					<Item id="373" aux="43"/>         <!-- Potion of Leaping II -->
+				</Kit>
+				<Kit weight="100" kpScore="8">
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id="346">                   <!-- Fishing Rod - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="262" qty="5"/>					<!-- Arrow -->
+				</Kit>
+
+
+				<!-- Gardener -->
+				<!-- 7.5% -->
+				<Kit weight="75" kpScore="10">
+					<Item id="359">           <!-- Shears - Sharpness 2 -->
+						<Enchantment id="16" level="2" override="true"/>
+					</Item>
+					<Item id="438" aux="8"/>    <!-- Splash Potion of Weakness -->
+					<Item id="373" aux="43"/>   <!-- Potion of Leaping II -->
+				</Kit>
+				<Kit weight="75" kpScore="10">
+					<Item id="256">           <!-- Iron shovel - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="75" kpScore="5">
+					<Item id="346">           <!-- Fishing Rod - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Pyro Farmer -->
+				<!-- 7.5% -->
+				<Kit weight="75" kpScore="10">
+					<Item id="290">                   <!-- Wooden Hoe - Fire Aspect 1 - Sharpness 1 -->
+						<Enchantment id="20" level="1" override="true"/>
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+					<Item id="441" aux="12"/>     <!-- Lingering Potion of Harming -->
+					<Item id="438" aux="10"/>     <!-- Splash Potion of Slowness -->
+				</Kit>
+				<Kit weight="75" kpScore="10">
+					<Item id="280"> <!-- Stick - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+					<Item id="385" qty="10"/>           <!-- Fire Charge -->
+					<Item id="441" aux="12" qty="2"/>   <!-- Lingering Potion of Harming -->
+				</Kit>
+				<Kit weight="75" kpScore="10">
+					<Item id="273" qty="1">           <!-- Stone Shovel - Fire Aspect 1 -->
+						<Enchantment id="20" level="1" override="true"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Food -->
+				<ChestItem kpScore="2">
+					<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+					<Item id="260"/> <!-- Apple -->
+				</ChestItem>
+				<ChestItem kpScore="4">
+					<Item id="320"/> <!-- Cooked Porkchop -->
+				</ChestItem>
+
+			</LootGroup>
+			
+			
+			<!--  ****************************************************************  -->
+			<!-- THESE ITEMS WILL BEGIN FILLING THE STARTING CHESTS AFTER X MINUTES -->
+			<!--  ****************************************************************  -->
+
+			<LootGroup name="UpdateItems" kpScore="3" distributionMethod="WeightedRandom">
+
+				<!-- Food 25% -->
+				<ChestItem minCount="1" maxCount="2" weight="14" playersForMin="2">
+					<Item id="260"/> <!-- Apple -->
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="10" playersForMin="2">
+					<Item id="320"/> <!-- Cooked Porkchop -->
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="1" playersForMin="2">
+					<Item id="322"/> <!-- Golden Apple -->
+				</ChestItem>
+
+				<!-- Potions 18% -->
+				<!-- Potions - Regular -->
+				<ChestItem minCount="1" maxCount="1" weight="2">
+					<Item id="373" aux="37"/> <!-- Potion of Healing -->
+					<Item id="373" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="373" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+					<Item id="373" aux="14"/> <!-- Potion of Invisibility -->
+				</ChestItem>
+				<!-- Potions - Splash -->
+				<ChestItem minCount="1" maxCount="1" weight="2">
+					<Item id="438" aux="36"/> <!-- Splash Potion of Poison 2 (0:45) -->
+					<Item id="438" aux="8"/> <!-- Splash Potion of Weakness (1:30) -->
+					<Item id="438" aux="12"/> <!-- Splash Potions of Harming -->
+				</ChestItem>
+				<!-- Potions - Lingering -->
+				<ChestItem minCount="1" maxCount="1" weight="2">
+					<Item id="441" aux="37"/> <!-- Lingering Potion of Healing -->
+					<Item id="441" aux="12"/> <!-- Lingering Potions of Harming -->
+				</ChestItem>
+
+				<!-- Arrows 20% -->
+				<ChestItem minCount="1" maxCount="1" weight="20" playersForMin="0">
+					<Item id="262" qty="5"/>  <!-- Arrow -->
+				</ChestItem>
+
+				<!-- Weapons and Armour 20% -->
+				<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">        
+					<Item id="268"/>          <!-- Wooden Sword-->
+        		</ChestItem>
+
+        		<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">
+          			<Item id="271"/>          <!-- Wooden Axe-->
+				</ChestItem>
+
+        		<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">
+          			<Item id="256"/>          <!-- Iron Shovel-->
+				</ChestItem>
+
+        		<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">
+          			<Item id="274"/>          <!-- Stone Pickaxe-->
+				</ChestItem>
+
+				<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">
+					<Item id ="261"/>         <!-- Bow -->
+				</ChestItem>
+
+        		<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">
+          			<Item id="346" aux="40">
+            		<!-- Fishing Rod - Knockback -->
+            		<Enchantment id="19" level="1" override="true"/>
+          			</Item>
+        		</ChestItem>
+
+				<!-- Specials 17%  -->
+				<ChestItem minCount="1" maxCount="1" weight="1">
+					<Item id="272"> <!-- Stone Sword - Fire Aspect -->
+						<Enchantment id="20" level="1"/>
+					</Item>
+					<Item id="258"> <!-- Iron Axe - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+					<Item id="278"/> <!-- Diamond Pickaxe -->
+					<Item id="277"> <!-- Diamond shovel - Knockback 2 -->
+						<Enchantment id="19" level="2" override="true"/>
+					</Item>
+
+					<Item id="261"> <!-- Bow - Power -->
+						<Enchantment id="48" level="1"/>
+					</Item>
+					<Item id ="261"> <!-- Bow - Punch -->
+						<Enchantment id="49" level="1" override="true"/>
+					</Item>
+					<Item id ="261"> <!-- Bow - Flame -->
+						<Enchantment id="50" level="1" override="true"/>
+					</Item>
+
+					<Item id="46" qty="3"/> <!-- TNT -->
+
+					<Item id="449"/> <!-- Totem of Undying -->
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--                 ITEM LISTS FOR THE OUTER CHESTS                    -->
+			<!--  ****************************************************************  -->
+			
+			<LootGroup name="OuterItems" kpScore="20" distributionMethod="KitKPRandom">
+
+				<!-- Sword -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="268"/> <!-- Wooden Sword-->
+				</Kit>
+
+				<!-- Bow -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id ="261"/> <!-- Bow -->
+					<Item id="262" qty="5"/> <!-- Arrow -->
+				</Kit>
+
+				<!-- Axe -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="271"/> <!-- Wooden Axe-->
+				</Kit>
+
+				<!-- PickAxe -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="270"> <!-- Wooden Pickaxe - Sharpness 1 -->
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+				</Kit>
+
+				<!-- Shovel -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="269"> <!-- Wooden Shovel - Sharpness 2 -->
+						<Enchantment id="16" level="2" override="true"/>
+					</Item>
+				</Kit>
+
+				<!-- Food -->
+				<ChestItem kpScore="1">				
+					<Item id="260"/> <!-- Apple -->
+				</ChestItem>
+				<ChestItem kpScore="2">
+					<Item id="320"/> <!-- Cooked Porkchop -->
+				</ChestItem>
+				
+				<!-- Potions - Regular -->
+				<ChestItem kpScore="3">
+					<Item id="373" aux="37" qty="3" /> <!-- Potion of Healing -->
+					<Item id="373" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="373" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+					<Item id="373" aux="3"/> <!-- Potion of Fire Resistance -->
+					<Item id="373" aux="14"/> <!-- Potion of Invisibility -->
+				</ChestItem>
+				
+				<!-- Potions - Splash -->
+				<ChestItem kpScore="3">
+					<Item id="438" aux="36"/> <!-- Splash Potion of Poison 2 (0:45) -->
+					<Item id="438" aux="8"/> <!-- Splash Potion of Weakness (1:30) -->
+					<Item id="438" aux="10"/> <!-- Splash Potion of Slowness (1:30) -->
+					<Item id="438" aux="12"/> <!-- Splash Potions of Harming -->
+				</ChestItem>
+
+				<!-- Potions - Lingering -->
+				<ChestItem kpScore="3">
+					<Item id="441" aux="37"/> <!-- Lingering Potion of Healing -->
+					<Item id="441" aux="12"/> <!-- Lingering Potions of Harming -->
+				</ChestItem>
+
+				<!-- Tipped Arrows -->
+				<ChestItem kpScore="3">
+					<Item id="440" aux="36" qty="2"/> <!-- Arrows of Poison 2 -->
+					<Item id="440" aux="8" qty="3"/> <!-- Arrows of Weakness -->
+					<Item id="440" aux="10" qty="3"/> <!-- Arrows of Slowness -->
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--        THESE ITEMS WILL BE PLACED INTO HIGH VALUE CHESTS           -->
+			<!--  ****************************************************************  -->			
+
+			<LootGroup name="HVItems" kpScore="18" distributionMethod="KitKPGreedy">
+
+				<!-- Food -->
+				<ChestItem kpScore="1">
+					<Item id="260"/> <!-- Apple -->
+				</ChestItem>
+				<ChestItem kpScore="1">
+					<Item id="320"/> <!-- Cooked Porkchop -->
+				</ChestItem>
+				<ChestItem kpScore="3">
+					<Item id="322"/> <!-- Golden Apple -->
+				</ChestItem>
+
+				<!-- Weapons and Armour -->
+				<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+				<Kit weight="1" kpScore="10">
+					<Item id="272"> <!-- Stone Sword - Fire Aspect -->
+						<Enchantment id="20" level="1"/>
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id="258"> <!-- Iron Axe - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id="278"/> <!-- Diamond Pickaxe -->
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id="277"> <!-- Diamond Shovel - Knockback 2 -->
+						<Enchantment id="19" level="2" override="true"/>
+					</Item>
+				</Kit>
+
+				<Kit weight="1" kpScore="10">
+					<Item id="261"> <!-- Bow - Power -->
+						<Enchantment id="48" level="1"/>
+						<Item id="262" qty="5"/> <!-- Arrows -->
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id ="261"> <!-- Bow - Punch -->
+						<Enchantment id="49" level="1" override="true"/>
+						<Item id="262" qty="5"/> <!-- Arrows -->
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id ="261"> <!-- Bow - Flame -->
+						<Enchantment id="50" level="1" override="true"/>
+						<Item id="262" qty="5"/> <!-- Arrows -->
+					</Item>
+				</Kit>
+
+				<Kit weight="1" kpScore="10">
+					<Item id="46" qty="3"/> <!-- TNT -->
+				</Kit>
+				
+				<Kit weight="1" kpScore="10">
+					<!-- Bow - Infinity - 12 uses but no arrows -->
+					<Item id ="261" aux="373">
+						<Enchantment id="51" level="1" override="true"/>
+					</Item>
+				</Kit>
+				
+				<ChestItem kpScore="3">
+					<Item id="440" aux="36" qty="5"/> <!-- Arrows of Poison 2 -->
+				</ChestItem>
+
+		 	</LootGroup>
+		</LootSet>
+
+		<LootSet name="HighPower">
+
+			<LootGroup name="StartItems" kpScore="20" distributionMethod="KitKPRandom">
+								
+				<!-- BASE KITS -->
+
+				<!-- Attributes -->
+				<!-- weight: used for random selection -->
+				<!-- kpScore: estimate of the value of the contents -->
+
+				<!-- Kits       Weights -->
+				<!-- Swordsman: 150 - 15% -->
+				<!-- Heavy:     150 - 15% -->
+				<!-- Scout:     150 - 15% -->
+				<!-- Mage:      100 - 10% -->
+				<!-- Healer:    100 - 10% -->
+				<!-- Ninja:     100 - 10% -->
+				<!-- Pirate:     75 - 7.5% -->
+				<!-- Gardener:   75 - 7.5% -->
+				<!-- Pyro Farmer:75 - 7.5% -->
+				
+				<!-- Swordsman --> 
+				<!-- 15% -->
+				<Kit weight="150" kpScore="12">
+					<Item id="276"/>              <!-- Diamond sword -->
+					<Item id ="373" aux="37"/>    <!-- Potion of Healing -->
+				</Kit>
+				<Kit weight="150" kpScore="12">
+					<Item id="276"/>              <!-- Diamond sword -->
+					<Item id ="373" aux="1"/>     <!-- Potion of Regeneration -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="258"/>              <!-- Iron Axe -->
+					<Item id ="261"/>             <!-- Bow -->
+					<Item id="262" qty="5"/>      <!-- Arrow -->
+				</Kit>
+
+
+				<!-- Heavy -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="12">
+					<Item id="278"/>					    <!-- Diamond Pickaxe -->
+					<Item id="373" aux="9"/>      <!-- Potion of Strength -->
+					<Item id="306">               <!-- Iron Helmet - Thorns 1-->
+						<Enchantment id ="7" level="1"/>
+					</Item>
+				</Kit>
+				<Kit weight="150" kpScore="12">
+					<Item id="46" qty="5"/>       <!-- TNT -->
+					<Item id ="373" aux="3"/>     <!-- Potion of Fire Resistance -->
+					<Item id="307">               <!-- Iron Chestplate - Blast Protection IV -->
+						<Enchantment id ="3" level="4"/>
+					</Item>
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="311">					      <!-- Diamond Chestplate - Protection II -->
+						<Enchantment id="0" level="1" override="true"/>
+					</Item>
+					<Item id="280">               <!-- Stick - Sharpness 5 -->
+						<Enchantment id="16" level="5" override="true"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Scout -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="10">
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="440" aux="10" qty="5"/> <!-- Arrows of Slowness -->
+					<Item id ="373" aux="2"/>         <!-- Potion of Swiftness -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="440" aux="8" qty="5"/>  <!-- Arrows of Weakness -->
+					<Item id="309">                   <!-- Iron Boots - Depth Strider II -->
+						<Enchantment id="8" level="2" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="276"/>                  <!-- Diamond Sword -->
+					<Item id="309">                   <!-- Iron Boots - Feather Falling II -->
+						<Enchantment id="2" level="2" override="true"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Mage -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="280">                               <!-- Stick - Fire II - Knockback I -->
+						<Enchantment id="20" level="2" override="true"/>
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+					<Item id="438" aux="12" qty="4"/>             <!-- Splash Potions of Harming -->
+					<Item id ="373" aux="37"/>                    <!-- Potion of Healing -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="280">                               <!-- Stick - Knockback II - Sharpness 1 -->
+						<Enchantment id="19" level="2" override="true"/>
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+					<Item id="438" qty="3" aux="12"/>             <!-- Splash Potion of Harming -->
+					<Item id="441" qty="3" aux="12"/>             <!-- Lingering Potion of Harming -->
+				</Kit>
+				<Kit weight="100" kpScore="10">                 <!-- Cursed armour set! -->
+					<Item id="314">                               <!-- Golden Helmet - Binding -->
+						<Enchantment id="10" level="2" override="true"/>
+					</Item>
+					<Item id="315">                               <!-- Golden Chestplate - Binding -->
+						<Enchantment id="10" level="2" override="true"/>
+					</Item>
+					<Item id="316">                               <!-- Golden Leggings - Binding -->
+						<Enchantment id="10" level="2" override="true"/>
+					</Item>
+					<Item id="317">                               <!-- Golden Boots - Binding -->
+						<Enchantment id="10" level="2" override="true"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Resistor -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="310">                     <!-- Diamond Helmet - Fire Protection IV -->
+						<Enchantment id="1" level="4" override="true"/>
+					</Item>
+					<Item id="322"/>                    <!-- Golden Apple -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id ="373" aux="1"/>           <!-- Potion of Regeneration -->
+					<Item id="308">                     <!-- Iron Leggings - Fire Protection II -->
+						<Enchantment id="1" level="2" override="true"/>
+					</Item>
+					<Item id="309">                     <!-- Iron Boots - Blast Protection II -->
+						<Enchantment id="3" level="2" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="438" aux="36" qty="4"/>   <!-- Splash Potions of Poison -->
+					<Item id="312">                     <!-- Diamond Leggings - Fire Protection II -->
+						<Enchantment id="1" level="2" override="true"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Ninja -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id="373" aux="2"/>          <!-- Potion of Swiftness -->
+					<Item id="276"/>                  <!-- Diamond sword -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id="46" qty="5"/>           <!-- TNT -->
+					<Item id="309"/>                  <!-- Iron Boots -->
+				</Kit>
+				<Kit weight="100" kpScore="10">
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="440" aux="36" qty="3"/> <!-- Arrows of Poison 2 -->
+				</Kit>
+
+
+				<!-- Pirate -->
+				<!-- 7.5% -->
+				<Kit weight="75" kpScore="10">
+					<Item id="306">                   <!-- Iron Helmet - Respiration 1-->
+						<Enchantment id="5" level="1"/>
+					</Item>
+					<Item id="309"/>                  <!-- Iron Boots -->
+					<Item id="267"/>                  <!-- Iron Sword -->
+				</Kit>
+				<Kit weight="75" kpScore="10">
+					<Item id="306">                   <!-- Iron Helmet - Respiration 1-->
+						<Enchantment id="5" level="1"/>
+					</Item>
+					<Item id="309"/>                  <!-- Iron Boots -->
+					<Item id="279"/>				          <!-- Diamond Axe -->
+				</Kit>
+				<Kit weight="75" kpScore="10">
+					<Item id="306">                   <!-- Iron Helmet - Respiration 1-->
+						<Enchantment id="5" level="1"/>
+					</Item>
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="440" aux="8" qty="5"/>  <!-- Arrows of Weakness -->
+				</Kit>
+				
+
+				<!-- Pyro Farmer -->
+				<!-- 7.5% -->
+				<Kit weight="75" kpScore="10">
+					<Item id="293">                   <!-- Diamond Hoe - Fire Aspect 1 -->
+						<Enchantment id="20" level="1" override="true"/>
+					</Item>
+					<Item id="308"/>                  <!-- Iron Leggings -->
+					<Item id="438" aux="74"/>         <!-- Splash Potion of Long Slowness -->
+				</Kit>
+				<Kit weight="75" kpScore="10">
+					<Item id="385" qty="10"/>         <!-- Fire Charge -->
+					<Item id="313">                   <!-- Diamond Leggings - Fire Protection II -->
+						<Enchantment id="1" level="4" override="true"/>
+					</Item>
+					<Item id="441" aux="12" qty="2"/> <!-- Lingering Potion of Harming -->
+				</Kit>
+				<Kit weight="75" kpScore="10">
+					<Item id="277" qty="1">           <!-- Diamond Shovel - Fire Aspect II -->
+						<Enchantment id="20" level="2" override="true"/>
+					</Item>
+					<Item id="309"/>                  <!-- Iron Boots -->
+				</Kit>
+
+
+				<!-- Food -->
+				<ChestItem kpScore="3">
+					<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+					<Item id="424"/> <!-- Cooked Mutton -->
+				</ChestItem>
+				<ChestItem kpScore="5">
+					<Item id="413"/> <!-- Rabbit Stew -->
+				</ChestItem>
+
+			</LootGroup>
+			
+			
+			<!--  ****************************************************************  -->
+			<!-- THESE ITEMS WILL BEGIN FILLING THE STARTING CHESTS AFTER X MINUTES -->
+			<!--  ****************************************************************  -->
+
+			<LootGroup name="UpdateItems" kpScore="3" distributionMethod="WeightedRandom">
+
+				<!-- Food 25% -->
+				<ChestItem minCount="1" maxCount="1" weight="14" playersForMin="2">
+					<Item id="424"/> <!-- Cooked Mutton -->
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="10" playersForMin="2">
+					<Item id="413"/> <!-- Rabbit Stew -->
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="1" playersForMin="2">
+					<Item id="322"/> <!-- Golden Apple -->
+				</ChestItem>
+
+				<!-- Potions 18% -->
+				<!-- Potions - Regular -->
+				<ChestItem minCount="1" maxCount="1" weight="2">
+					<Item id="373" aux="37"/> <!-- Potion of Healing -->
+					<Item id="373" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="373" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+					<Item id="373" aux="14"/> <!-- Potion of Invisibility -->
+				</ChestItem>
+				<!-- Potions - Splash -->
+				<ChestItem minCount="1" maxCount="1" weight="2">
+					<Item id="438" aux="36"/> <!-- Splash Potion of Poison 2 (0:45) -->
+					<Item id="438" aux="8"/> <!-- Splash Potion of Weakness (1:30) -->
+					<Item id="438" aux="12"/> <!-- Splash Potions of Harming -->
+				</ChestItem>
+				<!-- Potions - Lingering -->
+				<ChestItem minCount="1" maxCount="1" weight="2">
+					<Item id="441" aux="37"/> <!-- Lingering Potion of Healing -->
+					<Item id="441" aux="12"/> <!-- Lingering Potions of Harming -->
+				</ChestItem>
+
+				<!-- Arrows 20% -->
+				<ChestItem minCount="1" maxCount="1" weight="20" playersForMin="0">
+					<Item id="262" qty="8"/>  <!-- Arrow -->
+				</ChestItem>
+
+				<!-- Weapons and Armour 20% -->
+				<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">        
+					<Item id="276"/>          <!-- Diamond Sword-->
+					<Item id="279"/>          <!-- Diamond Axe-->
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="8" playersForMin="0">
+					<Item id="261">           <!-- Bow - Power -->
+						<Enchantment id="48" level="1"/>
+					</Item>
+				</ChestItem>
+
+				<!-- Specials 17%  -->
+				<ChestItem minCount="1" maxCount="1" weight="1">
+					<Item id="267"> <!-- Iron Sword - Fire Aspect -->
+						<Enchantment id="20" level="1"/>
+					</Item>
+					<Item id="279"> <!-- Diamond Axe - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+					<Item id="278"/> <!-- Diamond Pickaxe -->
+					<Item id="277"> <!-- Diamond shovel - Knockback 2 -->
+						<Enchantment id="19" level="2" override="true"/>
+					</Item>
+
+					<Item id="261"> <!-- Bow - Infinity -->
+						<Enchantment id="51" level="1"/>
+					</Item>
+					<Item id ="261"> <!-- Bow - Punch -->
+						<Enchantment id="49" level="2" override="true"/>
+					</Item>
+					<Item id ="261"> <!-- Bow - Flame -->
+						<Enchantment id="50" level="1" override="true"/>
+					</Item>
+
+					<Item id="46" qty="5"/> <!-- TNT -->
+
+					<Item id="314"> <!-- Gold Helmet - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="315"> <!-- Gold Chest - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="316"> <!-- Gold Leggings - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="317"> <!-- Gold Boots - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="306"> <!-- Iron Helmet - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+					<Item id="307"> <!-- Iron Chestplate - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+					<Item id="308"> <!-- Iron Leggings - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+					<Item id="309"> <!-- Iron Boots - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+
+					<Item id="449"/> <!-- Totem of Undying -->
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--                 ITEM LISTS FOR THE OUTER CHESTS                    -->
+			<!--  ****************************************************************  -->
+			
+			<LootGroup name="OuterItems" kpScore="20" distributionMethod="KitKPRandom">
+
+				<!-- Sword -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="276"/> <!-- Diamond Sword-->
+				</Kit>
+
+				<!-- Bow -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id ="261"/> <!-- Bow -->
+					<Item id="440" aux="10" qty="5"/> <!-- Arrows of Slowness -->
+				</Kit>
+
+				<!-- Axe -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="279"/> <!-- Diamond Axe-->
+				</Kit>
+
+				<!-- PickAxe -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="278"> <!-- Diamond Pickaxe - Sharpness 1 -->
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+				</Kit>
+
+				<!-- Shovel -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="277"> <!-- Diamond Shovel - Sharpness 2 -->
+						<Enchantment id="16" level="2" override="true"/>
+					</Item>
+				</Kit>
+
+				<!-- Food -->
+				<ChestItem kpScore="2">				
+					<Item id="424"/> <!-- Cooked Mutton -->
+				</ChestItem>
+				<ChestItem kpScore="3">
+					<Item id="413"/> <!-- Rabbit Stew -->
+				</ChestItem>
+				
+				<!-- Potions - Regular -->
+				<ChestItem kpScore="3">
+					<Item id="373" aux="37" qty="3" /> <!-- Potion of Healing -->
+					<Item id="373" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="373" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+					<Item id="373" aux="14"/> <!-- Potion of Invisibility -->
+				</ChestItem>
+				
+				<!-- Potions - Splash -->
+				<ChestItem kpScore="3">
+					<Item id="438" aux="36"/> <!-- Splash Potion of Poison 2 (0:45) -->
+					<Item id="438" aux="12"/> <!-- Splash Potions of Harming -->
+				</ChestItem>
+
+				<!-- Potions - Lingering -->
+				<ChestItem kpScore="3">
+					<Item id="441" aux="37"/> <!-- Lingering Potion of Healing -->
+					<Item id="441" aux="12"/> <!-- Lingering Potions of Harming -->
+				</ChestItem>
+				
+				<ChestItem kpScore="4">
+					<Item id="306"/> <!-- Iron Helmet -->
+					<Item id="307"/> <!-- Iron Chest -->
+					<Item id="308"/> <!-- Iron Leggings -->
+					<Item id="309"/> <!-- Iron Boots -->
+					<Item id="310"/> <!-- Diamond Helmet -->
+					<Item id="311"/> <!-- Diamond Chest -->
+					<Item id="312"/> <!-- Diamond Leggings -->
+					<Item id="313"/> <!-- Diamond Boots -->
+				</ChestItem>
+
+				<!-- Tipped Arrows -->
+				<ChestItem kpScore="3">
+					<Item id="440" aux="36" qty="3"/> <!-- Arrows of Poison 2 -->
+					<Item id="440" aux="8" qty="5"/> <!-- Arrows of Weakness -->
+					<Item id="440" aux="10" qty="5"/> <!-- Arrows of Slowness -->
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--        THESE ITEMS WILL BE PLACED INTO HIGH VALUE CHESTS           -->
+			<!--  ****************************************************************  -->			
+
+			<LootGroup name="HVItems" kpScore="18" distributionMethod="KitKPGreedy">
+
+				<!-- Food -->
+				<ChestItem kpScore="2">
+					<Item id="424"/> <!-- Cooked Mutton -->
+				</ChestItem>
+				<ChestItem kpScore="3">
+					<Item id="413"/> <!-- Rabbit Stew -->
+				</ChestItem>
+				<ChestItem kpScore="3">
+					<Item id="322"/> <!-- Golden Apple -->
+				</ChestItem>
+
+				<!-- Weapons and Armour -->
+				<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+				<Kit weight="1" kpScore="10">
+					<Item id="276"> <!-- Diamond Sword - Fire Aspect -->
+						<Enchantment id="20" level="1"/>
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id="279"> <!-- Diamond Axe - Knockback -->
+						<Enchantment id="19" level="1" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id="278"> <!-- Diamond Pickaxe - Sharpness V -->
+						<Enchantment id="16" level="5" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id="277"> <!-- Diamond Shovel - Fire Aspect - Knockback 2 -->
+						<Enchantment id="20" level="1"/>
+						<Enchantment id="19" level="2" override="true"/>
+					</Item>
+				</Kit>
+
+				<Kit weight="1" kpScore="10">
+					<Item id="261"> <!-- Bow - Power V -->
+						<Enchantment id="48" level="5"/>
+						<Item id="262" qty="5"/> <!-- Arrows -->
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id ="261"> <!-- Bow - Punch II -->
+						<Enchantment id="49" level="2" override="true"/>
+					<Item id="440" aux="10" qty="5"/> <!-- Arrows of Slowness -->
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="10">
+					<Item id ="261"> <!-- Bow - Flame -->
+						<Enchantment id="50" level="1" override="true"/>
+					</Item>
+					<Item id="440" aux="36" qty="3"/> <!-- Arrows of Poison 2 -->
+				</Kit>
+
+				<Kit weight="1" kpScore="10">
+					<Item id="46" qty="5"/> <!-- TNT -->
+				</Kit>
+				
+				<Kit weight="1" kpScore="10">
+					<Item id ="261"> <!-- Bow - Infinity -->
+						<Enchantment id="51" level="1" override="true"/>
+					</Item>
+						<Item id="262" qty="5"/> <!-- Arrows -->
+				</Kit>
+
+				<ChestItem kpScore="3">
+					<Item id="314"> <!-- Gold Helmet - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="315"> <!-- Gold Chest - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="316"> <!-- Gold Leggings - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="317"> <!-- Gold Boots - PROTECTION -->
+						<Enchantment id="0" level="3" />
+					</Item>
+					<Item id="306"> <!-- Iron Helmet - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+					<Item id="307"> <!-- Iron Chestplate - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+					<Item id="308"> <!-- Iron Leggings - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+					<Item id="309"> <!-- Iron Boots - THORNS -->
+						<Enchantment id="7" level="2"/>
+					</Item>
+				</ChestItem>
+				
+				<ChestItem kpScore="3">
+					<Item id="440" aux="36" qty="5"/> <!-- Arrows of Poison 2 -->
+				</ChestItem>
+
+		 </LootGroup>
+		</LootSet>
+
+		<LootSet name="Decayed">
+
+			<LootGroup name="StartItems" kpScore="20" distributionMethod="KitKPRandom">
+								
+				<!-- BASE KITS -->
+
+				<!-- Attributes -->
+				<!-- weight: used for random selection -->
+				<!-- kpScore: estimate of the value of the contents -->
+
+				<!-- Kits       Weights -->
+				<!-- Swordsman: 150 - 15% -->
+				<!-- Heavy:     150 - 15% -->
+				<!-- Scout:     150 - 15% -->
+				<!-- Mage:      100 - 10% -->
+				<!-- Healer:    100 - 10% -->
+				<!-- Ninja:     100 - 10% -->
+				<!-- Pirate:     75 - 7.5% -->
+				<!-- Gardener:   75 - 7.5% -->
+				<!-- Pyro Farmer:75 - 7.5% -->
+				
+				<!-- Swordsman --> 
+				<!-- 15% -->
+				<Kit weight="150" kpScore="12">
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1"/>
+					</Item>
+					<Item id="311"/>
+					<Item id="332" qty="16"/> <!-- Snowball -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</Kit>
+				<Kit weight="150" kpScore="12">
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1"/>
+					</Item>
+					<Item id="332" qty="16"/> <!-- Snowball -->
+					<Item id ="438" aux="1"/>     <!-- Potion of Regeneration -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="276"/>              <!-- Diamond sword -->
+					<Item id ="261"/>             <!-- Bow -->
+					<Item id="262" qty="16"/>      <!-- Arrow -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</Kit>
+
+
+				<!-- Heavy -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="12">
+					<Item id="267"/>					    <!-- Iron sword -->
+					<Item id="310"/>
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Scout -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="10">
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="262" qty="16"/> <!-- Arrows -->
+					<Item id="438" aux="2" qty="3"/> <!-- Potion of Swiftness (3:00) -->
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="332" qty="32"/> <!-- Snowball -->
+					<Item id="276"/>                  <!-- Diamond Sword -->
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</Kit>
+
+				<!-- Resistor -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="332" qty="32"/> <!-- Snowball -->
+					<Item id="311">                     <!-- Diamond Chestplate - Projectile Protection IV -->
+						<Enchantment id="4" level="4" override="true"/>
+					</Item>
+					<Item id="312"/>
+					<Item id="322" qty="3"/>                    <!-- Golden Apple -->
+				</Kit>
+
+
+				<!-- Ninja -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="311"/>
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id="438" aux="2"/>          <!-- Potion of Swiftness -->
+					<Item id="276"/>                  <!-- Diamond sword -->
+				</Kit>
+
+
+				<!-- Food -->
+				<ChestItem kpScore="3">
+					<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</ChestItem>
+				<ChestItem kpScore="4">
+					<Item id="322" qty="2"/>                    <!-- Golden Apple -->
+				</ChestItem>
+
+			</LootGroup>
+			
+			
+			<!--  ****************************************************************  -->
+			<!-- THESE ITEMS WILL BEGIN FILLING THE STARTING CHESTS AFTER X MINUTES -->
+			<!--  ****************************************************************  -->
+
+			<LootGroup name="UpdateItems" kpScore="12" distributionMethod="WeightedRandom">
+
+				<!-- Food 25% -->
+				<ChestItem minCount="4" maxCount="4" weight="25" playersForMin="2">
+					<Item id="364"/> <!-- Steak -->
+				</ChestItem>
+
+				<!-- Potions 20% -->
+				<!-- Potions - Regular -->
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="373" aux="14"/> <!-- Potion of Invisibility -->
+				</ChestItem>
+				<!-- Potions - Splash -->
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="438" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="438" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+				</ChestItem>
+
+				<!-- Arrows 24% -->
+				<ChestItem minCount="1" maxCount="1" weight="4" playersForMin="0">
+					<Item id="262" qty="16"/>  <!-- Arrow -->
+					<Item id="332" qty="16"/> <!-- Snowball -->
+				</ChestItem>
+
+				<!-- Weapons and Armour 20% -->
+				<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">        
+					<Item id="276"/>          <!-- Diamond Sword-->
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="5" playersForMin="0">        
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">
+					<Item id="261">           <!-- Bow - Power -->
+						<Enchantment id="48" level="1"/>
+					</Item>
+				</ChestItem>
+
+				<!-- Specials 17%  -->
+				<ChestItem minCount="1" maxCount="1" weight="7">
+					<Item id="262" qty="16"/>  <!-- Arrow -->
+
+					<Item id ="261"> <!-- Bow - Punch -->
+						<Enchantment id="49" level="2" override="true"/>
+					</Item>
+				</ChestItem>
+
+				<ChestItem minCount="1" maxCount="1" weight="5">
+					<Item id="310"> <!-- Diamond Helmet - PROTECTION -->
+						<Enchantment id="0" level="4" />
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="311">
+						<Enchantment id="4" level="4" />
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="312">
+						<Enchantment id="1" level="4" />
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="5">
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--                 ITEM LISTS FOR THE OUTER CHESTS                    -->
+			<!--  ****************************************************************  -->
+			
+			<LootGroup name="OuterItems" kpScore="25" distributionMethod="KitKPRandom">
+
+				<!-- Sword -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="4">
+					<Item id="276"/> <!-- Diamond Sword-->
+				</Kit>
+				<Kit weight="100" kpScore="5">
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+				</Kit>
+
+				<!-- Bow -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="6">
+					<Item id="261"> <!-- Bow - Power -->
+						<Enchantment id="48" level="1" override="true"/>
+					</Item>
+					<Item id="262" qty="16"/> <!-- Arrows -->
+				</Kit>
+
+				<!-- Food -->
+				<ChestItem kpScore="1">
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</ChestItem>
+				<ChestItem kpScore="2">
+					<Item id="322" qty="2"/> <!-- Golden Apple -->
+				</ChestItem>
+
+				<!-- Knockback -->
+				<ChestItem kpScore="3">
+					<Item id="332" qty="16"/> <!-- Snowball -->
+				</ChestItem>
+				
+				<!-- Potions - Splash -->
+				<ChestItem kpScore="5">
+					<Item id="438" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="438" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+				</ChestItem>
+
+				<ChestItem kpScore="1">
+					<Item id="310"/> <!-- Diamond Helmet -->
+				</ChestItem>
+				<ChestItem kpScore="1">
+					<Item id="311"/> <!-- Diamond Chest -->
+				</ChestItem>
+				<ChestItem kpScore="1">
+					<Item id="312"/> <!-- Diamond Leggings -->
+				</ChestItem>
+				<ChestItem kpScore="1">
+					<Item id="313"/> <!-- Diamond Boots -->
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--        THESE ITEMS WILL BE PLACED INTO HIGH VALUE CHESTS           -->
+			<!--  ****************************************************************  -->			
+
+			<LootGroup name="HVItems" kpScore="25" distributionMethod="KitKPGreedy">
+
+				<!-- Food -->
+				<ChestItem kpScore="2">
+					<Item id="364" qty="6"/> <!-- Steak -->
+				</ChestItem>
+				<ChestItem kpScore="2">
+					<Item id="322" qty="2"/> <!-- Golden Apple -->
+				</ChestItem>
+
+
+
+				<!-- Weapons and Armour -->
+				<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+				<Kit weight="1" kpScore="8">
+					<Item id="276"> <!-- Diamond Sword - Fire Aspect -->
+						<Enchantment id="20" level="1" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="6">
+					<Item id="346"> <!-- Fishingrod - Knockback 3 -->
+						<Enchantment id="19" level="3" override="true"/>
+					</Item>
+				</Kit>
+
+				<Kit weight="1" kpScore="8">
+					<Item id="261"> <!-- Bow - Power 3 -->
+						<Enchantment id="48" level="3"/>
+					</Item>
+					<Item id="262" qty="32"/> <!-- Arrows -->
+				</Kit>
+				<Kit weight="1" kpScore="6">
+					<Item id ="261"> <!-- Bow - Punch II -->
+						<Enchantment id="49" level="2" override="true"/>
+					</Item>
+					<Item id="262" qty="64"/> <!-- Arrows -->
+				</Kit>
+
+				<ChestItem kpScore="3">
+					<Item id="310"> <!-- Diamond Helmet - PROTECTION -->
+						<Enchantment id="0" level="4" />
+					</Item>
+					<Item id="311">
+						<Enchantment id="4" level="4" />
+					</Item>
+					<Item id="312">
+						<Enchantment id="1" level="4" />
+					</Item>
+					<Item id="313">
+						<Enchantment id="8" level="3"/>
+					</Item>
+				</ChestItem>
+				
+				<ChestItem kpScore="3">
+					<Item id="332" qty="32"/> <!-- Snowball -->
+				</ChestItem>
+
+		 </LootGroup>
+		</LootSet>
+
+		<LootSet name="Food Central">
+
+			<LootGroup name="StartItems" kpScore="20" distributionMethod="KitKPRandom">
+								
+				<!-- BASE KITS -->
+
+				<!-- Attributes -->
+				<!-- weight: used for random selection -->
+				<!-- kpScore: estimate of the value of the contents -->
+
+				<!-- Kits       Weights -->
+				<!-- Swordsman: 150 - 15% -->
+				<!-- Heavy:     150 - 15% -->
+				<!-- Scout:     150 - 15% -->
+				<!-- Mage:      100 - 10% -->
+				<!-- Healer:    100 - 10% -->
+				<!-- Ninja:     100 - 10% -->
+				<!-- Pirate:     75 - 7.5% -->
+				<!-- Gardener:   75 - 7.5% -->
+				<!-- Pyro Farmer:75 - 7.5% -->
+				
+				<!-- Swordsman --> 
+				<!-- 15% -->
+				<Kit weight="150" kpScore="12">
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1"/>
+					</Item>
+					<Item id="311"/>
+					<Item id="332" qty="16"/> <!-- Snowball -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</Kit>
+				<Kit weight="150" kpScore="12">
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1"/>
+					</Item>
+					<Item id="332" qty="16"/> <!-- Snowball -->
+					<Item id ="438" aux="1"/>     <!-- Potion of Regeneration -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="276"/>              <!-- Diamond sword -->
+					<Item id ="261"/>             <!-- Bow -->
+					<Item id="262" qty="16"/>      <!-- Arrow -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</Kit>
+
+
+				<!-- Heavy -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="12">
+					<Item id="267"/>					    <!-- Iron sword -->
+					<Item id="310"/>
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</Kit>
+
+
+				<!-- Scout -->
+				<!-- 15% -->
+				<Kit weight="150" kpScore="10">
+					<Item id ="261"/>                 <!-- Bow -->
+					<Item id="262" qty="16"/> <!-- Arrows -->
+					<Item id="438" aux="2" qty="3"/> <!-- Potion of Swiftness (3:00) -->
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</Kit>
+				<Kit weight="150" kpScore="10">
+					<Item id="332" qty="32"/> <!-- Snowball -->
+					<Item id="276"/>                  <!-- Diamond Sword -->
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</Kit>
+
+				<!-- Resistor -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="332" qty="32"/> <!-- Snowball -->
+					<Item id="311">                     <!-- Diamond Chestplate - Projectile Protection IV -->
+						<Enchantment id="4" level="4" override="true"/>
+					</Item>
+					<Item id="312"/>
+					<Item id="322" qty="3"/>                    <!-- Golden Apple -->
+				</Kit>
+
+
+				<!-- Ninja -->
+				<!-- 10% -->
+				<Kit weight="100" kpScore="10">
+					<Item id="311"/>
+					<Item id="373" aux="14"/>         <!-- Potion of Invisibility -->
+					<Item id="438" aux="2"/>          <!-- Potion of Swiftness -->
+					<Item id="276"/>                  <!-- Diamond sword -->
+				</Kit>
+
+
+				<!-- Food -->
+				<ChestItem kpScore="3">
+					<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</ChestItem>
+				<ChestItem kpScore="4">
+					<Item id="322" qty="2"/>                    <!-- Golden Apple -->
+				</ChestItem>
+
+			</LootGroup>
+			
+			
+			<!--  ****************************************************************  -->
+			<!-- THESE ITEMS WILL BEGIN FILLING THE STARTING CHESTS AFTER X MINUTES -->
+			<!--  ****************************************************************  -->
+
+			<LootGroup name="UpdateItems" kpScore="12" distributionMethod="WeightedRandom">
+
+				<!-- Food 25% -->
+				<ChestItem minCount="4" maxCount="4" weight="25" playersForMin="2">
+					<Item id="364"/> <!-- Steak -->
+				</ChestItem>
+
+				<!-- Potions 20% -->
+				<!-- Potions - Regular -->
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="373" aux="14"/> <!-- Potion of Invisibility -->
+				</ChestItem>
+				<!-- Potions - Splash -->
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="438" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="438" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+				</ChestItem>
+
+				<!-- Arrows 24% -->
+				<ChestItem minCount="1" maxCount="1" weight="4" playersForMin="0">
+					<Item id="262" qty="16"/>  <!-- Arrow -->
+					<Item id="332" qty="16"/> <!-- Snowball -->
+				</ChestItem>
+
+				<!-- Weapons and Armour 20% -->
+				<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">        
+					<Item id="276"/>          <!-- Diamond Sword-->
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="5" playersForMin="0">        
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="6" playersForMin="0">
+					<Item id="261">           <!-- Bow - Power -->
+						<Enchantment id="48" level="1"/>
+					</Item>
+				</ChestItem>
+
+				<!-- Specials 17%  -->
+				<ChestItem minCount="1" maxCount="1" weight="7">
+					<Item id="262" qty="16"/>  <!-- Arrow -->
+
+					<Item id ="261"> <!-- Bow - Punch -->
+						<Enchantment id="49" level="2" override="true"/>
+					</Item>
+				</ChestItem>
+
+				<ChestItem minCount="1" maxCount="1" weight="5">
+					<Item id="310"> <!-- Diamond Helmet - PROTECTION -->
+						<Enchantment id="0" level="4" />
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="311">
+						<Enchantment id="4" level="4" />
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="4">
+					<Item id="312">
+						<Enchantment id="1" level="4" />
+					</Item>
+				</ChestItem>
+				<ChestItem minCount="1" maxCount="1" weight="5">
+					<Item id="313">               <!-- Diamond boots - DepthStrider 3-->
+						<Enchantment id ="8" level="3"/>
+					</Item>
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--                 ITEM LISTS FOR THE OUTER CHESTS                    -->
+			<!--  ****************************************************************  -->
+			
+			<LootGroup name="OuterItems" kpScore="25" distributionMethod="KitKPRandom">
+
+				<!-- Sword -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="4">
+					<Item id="276"/> <!-- Diamond Sword-->
+				</Kit>
+				<Kit weight="100" kpScore="5">
+					<Item id="276"> <!-- Diamond Sword - Sharpness -->
+						<Enchantment id="16" level="1" override="true"/>
+					</Item>
+				</Kit>
+
+				<!-- Bow -->
+				<!-- 20% -->
+				<Kit weight="100" kpScore="6">
+					<Item id="261"> <!-- Bow - Power -->
+						<Enchantment id="48" level="1" override="true"/>
+					</Item>
+					<Item id="262" qty="16"/> <!-- Arrows -->
+				</Kit>
+
+				<!-- Food -->
+				<ChestItem kpScore="1">
+					<Item id="364" qty="4"/> <!-- Steak -->
+				</ChestItem>
+				<ChestItem kpScore="2">
+					<Item id="322" qty="2"/> <!-- Golden Apple -->
+				</ChestItem>
+
+				<!-- Knockback -->
+				<ChestItem kpScore="3">
+					<Item id="332" qty="16"/> <!-- Snowball -->
+				</ChestItem>
+				
+				<!-- Potions - Splash -->
+				<ChestItem kpScore="5">
+					<Item id="438" aux="1"/> <!-- Potion of Regeneration (0:45) -->
+					<Item id="438" aux="2"/> <!-- Potion of Swiftness (3:00) -->
+				</ChestItem>
+
+				<ChestItem kpScore="1">
+					<Item id="310"/> <!-- Diamond Helmet -->
+				</ChestItem>
+				<ChestItem kpScore="1">
+					<Item id="311"/> <!-- Diamond Chest -->
+				</ChestItem>
+				<ChestItem kpScore="1">
+					<Item id="312"/> <!-- Diamond Leggings -->
+				</ChestItem>
+				<ChestItem kpScore="1">
+					<Item id="313"/> <!-- Diamond Boots -->
+				</ChestItem>
+
+			</LootGroup>
+
+			<!--  ****************************************************************  -->
+			<!--        THESE ITEMS WILL BE PLACED INTO HIGH VALUE CHESTS           -->
+			<!--  ****************************************************************  -->			
+
+			<LootGroup name="HVItems" kpScore="25" distributionMethod="KitKPGreedy">
+
+				<!-- Food -->
+				<ChestItem kpScore="2">
+					<Item id="364" qty="6"/> <!-- Steak -->
+				</ChestItem>
+				<ChestItem kpScore="2">
+					<Item id="322" qty="2"/> <!-- Golden Apple -->
+				</ChestItem>
+
+				<ChestItem kpScore="15">
+					<Item id="368" qty="1"/> <!-- Enderpearl -->
+				</ChestItem>
+
+
+
+				<!-- Weapons and Armour -->
+				<!-- 4J-JEV: Default auxValue = 0, qty = 1 -->
+				<Kit weight="1" kpScore="8">
+					<Item id="276"> <!-- Diamond Sword - Fire Aspect -->
+						<Enchantment id="20" level="1" override="true"/>
+					</Item>
+				</Kit>
+				<Kit weight="1" kpScore="6">
+					<Item id="346"> <!-- Fishingrod - Knockback 3 -->
+						<Enchantment id="19" level="3" override="true"/>
+					</Item>
+				</Kit>
+
+				<Kit weight="1" kpScore="8">
+					<Item id="261"> <!-- Bow - Power 3 -->
+						<Enchantment id="48" level="3"/>
+					</Item>
+					<Item id="262" qty="32"/> <!-- Arrows -->
+				</Kit>
+				<Kit weight="1" kpScore="6">
+					<Item id ="261"> <!-- Bow - Punch II -->
+						<Enchantment id="49" level="2" override="true"/>
+					</Item>
+					<Item id="262" qty="64"/> <!-- Arrows -->
+				</Kit>
+
+				<ChestItem kpScore="3">
+					<Item id="310"> <!-- Diamond Helmet - PROTECTION -->
+						<Enchantment id="0" level="4" />
+					</Item>
+					<Item id="311">
+						<Enchantment id="4" level="4" />
+					</Item>
+					<Item id="312">
+						<Enchantment id="1" level="4" />
+					</Item>
+					<Item id="313">
+						<Enchantment id="8" level="3"/>
+					</Item>
+				</ChestItem>
+				
+				<ChestItem kpScore="3">
+					<Item id="332" qty="32"/> <!-- Snowball -->
+				</ChestItem>
+
+		 </LootGroup>
+		</LootSet>
+		
+	</LootSets>
+</GameMode>

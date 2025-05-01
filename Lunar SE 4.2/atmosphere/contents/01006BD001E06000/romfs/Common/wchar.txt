@@ -1,0 +1,63 @@
+/misc/sky.png
+Common/
+Pos : %.1f , %.1f , %.1f
+Fps : %d
+OnGround
+[Flying]
+[Sneaking]
+[Sprinting (%ls)]
+Toggled
+Key Held
+|
+%d
+S
+
+
+15
+
+30
+
+SW
+
+60
+
+75
+
+W
+
+
+105
+120
+NW
+
+150
+165
+N
+
+
+195
+210
+NE
+
+240
+255
+E
+
+
+285
+300
+SE
+
+330
+345
+CPS | %d:%d
+[%.2f blocks]
+%.2f m/s
+[L] %ls
+MC 1.0.17 | LunarSE 4.1
+ was kicked by 
+ : %d
+[SprintGlitch]
+ was detected.
+<
+> 

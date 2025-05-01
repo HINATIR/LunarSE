@@ -55,9 +55,9 @@ SE
 0x18703A4 : [%.2f blocks]
 0x18703DC : %.2f m/s
 0x1870400 : [L] %ls
-0x1870420 : MC 1.0.17 | LunarSE 2.0
-
-
+0x1870420 : MC 1.0.17 | LunarSE 3.0
+0x1870480 :  was kicked by 
+0x18704C0 : :%s
 
 
 
@@ -67,12 +67,27 @@ SE
 0x180004C int ZR cps
 0x180005C int ZL cps
 0x180006C ArmorItem 
-0x1800074 float AD input
-0x1800078 -0.125
-0x180007C float WS input
-0x1800080 0.125
-0x1800088  entity
-0x18000A0 : MC 1.0.17 | LunarSE 1.2
+0x180007C float AD input
+0x1800080 -0.125
+0x1800084 float WS input
+0x1800088 0.125
+0x180008C  entity
+0x18000A0 kickerPlayer
+0x18000D0 RX
+0x18000D4 RY
+0x18000D8 CameraYaw
+0x18000DC CameraPitch
+0x18000E0 oldCameraYaw
+0x18000E4 oldCameraPitch
+0x18000E8 yaw+pitch
+
+
+
+0x1801000 playerList
+0x1801050 time,X,Y,Z
+0x1801070 targetEntity,bottonToggle,currentIndex
+0x1801090 [None],[Fullrange]
+0x1801100 sprintGlitchDetectionPlayer
 
 
 0x1870A00 wstringtemp

@@ -16,12 +16,12 @@ CBZ W2, _noload
 LDR X2, [X20, #0x400]
 CBZ X2, _noload
 ADD X2, X20, #0x400
-MOV W1, #0x100
+MOV W1, #11
 MOV X0, X3
 BL 0x9C9C58 ; swprintf
 ADD X3, X19, #0x124
 ADD X2, X20, #0x400
-MOV W1, #0x100
+MOV W1, #11
 MOV X0, X3
 BL 0x9C9C58 ; swprintf
 MOV W0, #1
